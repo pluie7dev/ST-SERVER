@@ -119,6 +119,9 @@ author:
   
  
   links:
+    - label: "HOME"
+      icon: "fas fa-fw fa-link"
+      url: "https://pluie7dev.github.io/honeylapin"
     - label: "ST-JAVA-SPRING-SQL"
       icon: "fas fa-fw fa-link"
       url: "https://pluie7dev.github.io/ST-JAVA-SPRING-SQL"
