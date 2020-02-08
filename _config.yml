@@ -18,7 +18,7 @@ disqus_ID : disqus_vvvEQyTWgg
 
 # theme                  : "minimal-mistakes-jekyll"
 remote_theme           : "mmistakes/minimal-mistakes"
-minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 
 # Site Settings
 locale                   : "en-US"
@@ -113,8 +113,9 @@ analytics:
 
 # Site Author
 author:
-  name             : " "
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  name             : "Joo"
+  avatar           : "https://user-images.githubusercontent.com/60458672/74089630-a0dd1b80-4ae6-11ea-9fc8-ff50ce64a58d.jpg"
+  bio              : "Love truth and pardon error. (Voltaire)"
                    
   
  
