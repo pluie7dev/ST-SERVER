@@ -1,6 +1,20 @@
 ```
 ---
 RestTemplate 
+- Spring 4.x 부터 지원하는 Spring의 
+  HTTP 통신 템플릿
+- HTTP 요청 후 Json, xml, String 과 
+  같은 응답을 받을 수 있는 템플릿
+- Blocking I/O 기반의 Synchronous API 
+  (비동기를 지원하는 AsyncRestTemplate 도 있음)
+- ResponseEntity와 Server to Server 
+  통신하는데 자주 쓰임
+- 또는 Header, Content-Type등을 설정하여 
+  외부 API 호출
+- Http request를 지원하는 HttpClient를 사용
+
+
+기타 개요
 -스프링 3.0부터 지원
  스프링에서 제공하는 http 통신에 유용하게 쓸 수 있는 템플릿
  HTTP 서버와의 통신을 단순화하고 RESTful 원칙을 지킨다
@@ -207,6 +221,92 @@ String url = "http://testapi.com/search?text=1234";
 Object obj = restTemplate.getForObject
 ("요청할 URI 주소", "응답내용과 자동으로 매핑시킬 java object");
 System.out.println(obj); } }
+
+---
+RestTemplate conneciton pool 사용예제
+(다른 사이트 설명 참조)
+
+RestTemplate을 사용할 때 주의할 점
+RestTemplate 은 기본적으로 conneciton pool을
+사용하지 않기 때문에 매 요청마다 handshake를 
+수행한다. 이를 방지하기 위해 다음과 같은 설정을 
+추가한 Custom RestTemplate을 빈으로 등록하여 
+사용할 수 있다.
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client
+.HttpClientBuilder;
+import org.springframework.context
+.annotation.Bean;
+import org.springframework.context
+.annotation.Configuration;
+import org.springframework.http.client
+.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client
+.RestTemplate;
+
+@Configuration
+public class HttpConnectionConfig {
+
+    @Bean
+    public RestTemplate getCustomRestTemplate(){
+        HttpComponentsClientHttpRequestFactory 
+        httpRequestFactory 
+        = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectTimeout(2000);
+        httpRequestFactory.setReadTimeout(3000);
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setMaxConnTotal(200)
+                .setMaxConnPerRoute(20)
+                .build();
+        httpRequestFactory.setHttpClient(httpClient);
+        return new RestTemplate(httpRequestFactory);
+    }
+} 
+
+httpClient를 사용하기 위해 아파치 의존을 추가해야 한다
+
+<dependency>
+   <groupId>org.apache.httpcomponents</groupId>
+   <artifactId>httpclient</artifactId>
+   <version>4.5.9</version>
+</dependency>
+
+
+
+HttpComponentsClientHttpRequestFactory: 
+HttpClient를 사전구성 할 수 있는 메서드 제공
+
+- public void setConnectTimeout(int timeout)
+- public void setConnectionRequestTimeout
+  (int connectionRequestTimeout)
+- public void setReadTimeout(int timeout)
+
+- public void setBufferRequestBody
+ (boolean bufferRequestBody): requestBody에 대해 
+ 버퍼링을 할지 하지 않을지. 공식 문서에 의하면, 
+ Default는 true이나 매우 큰 응답 바디가 들어오는 경우 
+ false로 세팅하기를 권장한다.
+
+ HttpClient에 connection pool 설정
+
+ HttpClient httpClient = HttpClientBuilder.create()
+                .setMaxConnTotal(200)
+                .setMaxConnPerRoute(20)
+                .build();
+ 
+
+위 부분에 해당한다.
+MaxConnTotal이 connection pool의 갯수이고,
+MaxConnPerRoute는 IP, Port 하나 당 연결 제한 갯수이다.
+
+RestTemplate을 사용하기 위한 준비는 끝났고 주요 
+메소드는 다음과 같다.
+메소드 명으로도 알 수 있다시피 Restful을 
+준수하는 템플릿이다.
+
+
+
 
 ---
 참조문서 : https://stackoverflow.com/questions/31869193/using-spring-rest-template-either-creating-too-many-connections-or-slow/
